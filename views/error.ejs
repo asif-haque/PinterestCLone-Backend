@@ -1,0 +1,7 @@
+<% include ./partials/header.ejs %>
+<div class="text-white">
+  <h1 class="font-bold text-3xl my-5"><%= message %></h1>
+  <h2><%= error.status %></h2>
+  <pre><%= error.stack %></pre>
+</div>
+<% include ./partials/footer.ejs %>

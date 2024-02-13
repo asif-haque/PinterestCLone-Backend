@@ -1,0 +1,42 @@
+<% include ./partials/header.ejs %>
+<div class="containerr">
+  <div class="content py-3">
+    <!--pinterest logo-->
+    <!-- <div> -->
+    <img
+      src="https://i.pinimg.com/originals/d3/d1/75/d3d175e560ae133f1ed5cd4ec173751a.png"
+      alt="pin logo"
+      class="img1"
+    />
+    <!-- </div> -->
+    <p class="header">Log in to see more</p>
+
+    <form action="/login" method="post">
+      <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        class="detail"
+      /><br />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        class="detail"
+      />
+      <input class="btn int transition-all" type="submit" value="Login" />
+    </form>
+    <a href="/forgot">Forgot your password?</a>
+
+    <footer>
+      <p>
+        By continuing, you agree to Pinterest's
+        <b>Terms of Service, Privacy policy.</b>
+      </p>
+      <hr />
+      <a href="/register-page">Not on Pinterest yet? Register</a>
+    </footer>
+  </div>
+</div>
+
+<% include ./partials/footer.ejs %>

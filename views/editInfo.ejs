@@ -1,0 +1,48 @@
+<% include ./partials/header.ejs %>
+
+<h3 class="text-5xl text-center my-5 mb-20 text-white">
+  Edit Personal Information
+</h3>
+<div class="edit-info text-white px-5">
+  <form action="/edit-info-submit" method="post" class="flex justify-center flex-wrap">
+    <div class="w-full flex justify-center items-center mb-5">
+      <label for="fullname" class="mr-3">Name</label>
+      <input
+        id="fullname"
+        type="text"
+        name="fullname"
+        value="<%= user.fullname %>"
+        class="p-2 rounded-md w-1/2 bg-zinc-600"
+      />
+    </div>
+    <br />
+    <div class="w-full flex justify-center items-center mb-5">
+      <label for="email" class="mr-3">Email</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        value="<%= user.email %>"
+        class="p-2 rounded-md w-1/2 bg-zinc-600"
+      />
+    </div>
+    <br />
+    <div class="w-full flex justify-center items-center mb-5">
+      <label for="username" class="mr-3">Username</label>
+      <input
+        id="username"
+        type="text"
+        name="username"
+        value="<%= user.username %>"
+        class="p-2 rounded-md w-1/2 bg-zinc-600"
+      />
+    </div>
+    <br />
+    <button type="submit" class="bg-gray-800 px-3 py-2 rounded-md mt-7">Submit</button>
+  </form>
+</div>
+<!-- <script>
+    document.querySelectorAll("input")
+</script> -->
+
+<% include ./partials/footer.ejs %>

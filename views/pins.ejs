@@ -1,0 +1,16 @@
+<% include ./partials/header.ejs %>
+
+<div class="text-white p-5 flex gap-5 flex-wrap">
+  <% if (user.posts.length === 0) { %>
+  <h1 class="text-3xl m-auto font-bold my-10">Nothing !</h1>
+  <%} else { for (var i = 0; i < user.posts.length; i++ ) { %>
+  <a href="/pin/<%= user.posts[i]._id %>" class="h-fit w-fit">
+    <div
+      class="card [width:200px] rounded-lg overflow-hidden bg-zinc-700"
+    >
+      <img src="/images/uploads/<%= user.posts[i].image %>" alt="Your Pin" />
+    </div>
+  </a>
+  <% } } %>
+</div>
+<% include ./partials/footer.ejs %>

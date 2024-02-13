@@ -1,0 +1,16 @@
+<% include ./partials/header.ejs %>
+
+<div class="text-white p-5 flex gap-5 flex-wrap">
+  <% if (user.bookmarks.length === 0) { %>
+  <h1>No pins</h1>
+  <%} else { for (var i = 0; i < user.bookmarks.length; i++ ) { %>
+  <a href="/pin/<%= user.bookmarks[i]._id %>" class="h-fit w-fit">
+    <div
+      class="card [width:200px] rounded-lg overflow-hidden bg-zinc-700"
+    >
+      <img src="/images/uploads/<%= user.bookmarks[i].image %>" alt="Your Pin" />
+    </div>
+  </a>
+  <% } } %>
+</div>
+<% include ./partials/footer.ejs %>

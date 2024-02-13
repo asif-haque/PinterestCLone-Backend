@@ -1,0 +1,80 @@
+<% include ./partials/header.ejs %>
+<style>
+  .bookmark-filled {
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+  }
+</style>
+
+<div class="main text-white flex">
+  <div
+    class="image [width:130%] flex justify-center items-center bg-zinc-800 py-10"
+  >
+    <img
+      src="/images/uploads/<%= post.image %>"
+      alt="Image"
+      class="rounded-3xl [width:60%] object-cover"
+    />
+  </div>
+  <div class="post-info w-full [&>*]:p-3 relative">
+    <div
+      class="border-b border-white border-opacity-20 flex items-center gap-3"
+    >
+      <div class="dp w-10 h-10 rounded-full overflow-hidden">
+        <img src="/images/uploads/<%= post.user.dp %>" alt="DP" />
+      </div>
+      <a href="/profile/<%= post.user._id %>"><%= post.user.username %></a>
+    </div>
+    <div>
+      <h1 class="text-3xl"><%= post.title %></h1>
+    </div>
+    <p class="opacity-60"><%= post.description %></p>
+    <div
+      class="absolute bottom-0 bg-zinc-700 border-t border-white border-opacity-20 w-full flex justify-between"
+    >
+      <p class="p-2">Liked it?</p>
+      <div class="flex items-center gap-2 pr-1 hover:cursor-pointer">
+        <% if (post.likes.includes(user._id)) { %>
+        <a href="/unliked/<%= post._id %>"
+          ><i class="ri-heart-2-fill text-3xl"></i
+        ></a>
+        <% } else { %>
+        <a href="/liked/<%= post._id %>"
+          ><i class="ri-heart-2-line text-3xl"></i
+        ></a>
+        <% } %> <%= post.likes.length %>
+        <div class="bookmark pl-2.5">
+          <% if (user.bookmarks.includes(post._id)) { %>
+          <a href="/unbookmarked/<%= post._id %>" class="flex items-center">
+            <span class="material-symbols-outlined bookmark-filled text-3xl">
+              bookmark
+            </span>
+          </a>
+          <% } else{ %>
+          <a href="/bookmarked/<%= post._id %>" class="flex items-center">
+            <span class="material-symbols-outlined text-3xl">
+              bookmark_add
+            </span>
+          </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  //   const lineHeart = document.querySelector(".ri-heart-2-line");
+  //   const filledHeart = document.querySelector(".ri-heart-2-fill");
+  // //   lineHeart.addEventListener("click", () => {
+  // //     lineHeart.style.display = "none";
+  // //     filledHeart.style.display = "inline-block";
+  // //   });
+  // //   filledHeart.addEventListener("click", () => {
+  // //     filledHeart.style.display = "none";
+  // //     lineHeart.style.display = "inline-block";
+  // //   });
+  //  const handleClick = (post) => {
+  //     console.log(post);
+  //  }
+</script>
+
+<% include ./partials/footer.ejs %>
