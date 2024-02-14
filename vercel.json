@@ -1,9 +1,9 @@
 {
   "version": 2,
   "builds": [
-     { "src": "www", "use": "@vercel/node" }
+     { "src": "app.js", "use": "@vercel/node" }
   ],
   "routes": [
-     { "src": "/(.*)", "dest": "/bin/www" }
+     { "src": "/(.*)", "dest": "/app.js" }
   ]
 }
