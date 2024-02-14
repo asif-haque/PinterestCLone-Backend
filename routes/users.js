@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const plm = require("passport-local-mongoose");
 
-mongoose.connect("mongodb://localhost:27017/pinterestClone");
+mongoose.connect(process.env.MONGO_URI);
 
 const userSchema = new mongoose.Schema({
   fullname: {

@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require("../index");
+var app = require("../app");
 var debug = require("debug")("6-pinterestclone-backend:server");
 var http = require("http");
 
