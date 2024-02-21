@@ -127,6 +127,22 @@ router.get("/delete/:postId", async (req, res) => {
   }
 });
 
+router.get("/edit/:postId", async (req, res) => {
+  const postId = req.params.postId;
+  const user = await userModel.findOne({
+    username: req.session.passport.user,
+  });
+  const post = await postModel.findOne({
+    _id: postId,
+  });
+  if (user._id.equals(post.user)) {
+    // redirect to add route
+    res.redirect("/add")
+  } else {
+    res.render("delete", { nav: true, user: currentUser });
+  }
+});
+
 router.get("/unliked/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
   const post = await postModel.findOne({
