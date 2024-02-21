@@ -8,8 +8,6 @@ const passport = require("passport");
 const env = require("dotenv");
 env.config();
 
-const MongoStore = require("connect-mongo");
-
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const { error } = require("console");
@@ -26,10 +24,6 @@ app.use(
     resave: false,
     saveUninitialized: false,
     secret: "abcde",
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      ttl: 7 * 24 * 60 * 60, // Session TTL (optional)
-    }),
   })
 );
 
