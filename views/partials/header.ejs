@@ -32,10 +32,18 @@
     <% if (nav === true) { %>
     <nav class="text-white flex justify-between px-7 py-4 bg-zinc-700">
       <a href="/feed" class="text-xl">Pinterest</a>
-      <div class="space-x-5">
-        <a href="/feed">Explore</a>
-        <a href="/profile">Profile</a>
-        <a href="/logout">Logout</a>
+      <div class="flex gap-7 items-center">
+        <a href="/feed" class="hover:scale-95 transition-all">Explore</a>
+        <a href="/logout" class="hover:scale-95 transition-all">Logout</a>
+        <a href="/profile" class="hover:scale-95 transition-all">
+          <div class="dp w-10 h-10 rounded-full overflow-hidden">
+            <img
+              src="/images/uploads/<%= user && user.dp ? user.dp : `userWithoutDp.jpg` %>"
+              alt="DP"
+              class="size-full object-cover"
+            />
+          </div>
+        </a>
       </div>
     </nav>
     <% } %>

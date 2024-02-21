@@ -3,26 +3,71 @@
   .bookmark-filled {
     font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
   }
+  .show {
+    /* First I removed the hidden class. Then instead of directly showing up the modal, I added a little animation */
+    animation: show 0.2s ease-out;
+  }
+  @keyframes show {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
 </style>
 
-<div class="main text-white flex">
-  <div
-    class="image [width:130%] flex justify-center items-center bg-zinc-800 py-10"
-  >
+<div
+  class="hidden overlay absolute left-0 top-0 z-10 w-full h-full [background-color:rgba(24,24,27,0.6)]"
+  onclick="closeModal()"
+></div>
+<div
+  class="hidden modal absolute z-20 left-1/2 top-1/2 [transform:translate(-50%,-50%)] bg-zinc-800 text-white text-center w-1/4 divide-y-[1px] rounded-xl"
+>
+  <div class="delete-drama">
+    <div class="delete-1 py-3 text-red-500">
+      <button onclick="clickdelete()">Delete ?</button>
+    </div>
+
+    <div class="delete-2 hidden py-3 text-red-500 font-bold">
+      <a href="/delete/<%= post._id %>">Delete ???</a>
+    </div>
+  </div>
+  <div class="py-3">
+    <a href="/edit/<%= post._id %>">Edit</a>
+  </div>
+</div>
+
+<div class="main text-white h-[90vh] flex">
+  <div class="image w-[200%] flex justify-center items-center bg-zinc-800 py-5">
     <img
       src="/images/uploads/<%= post.image %>"
       alt="Image"
-      class="rounded-3xl [width:60%] object-cover"
+      class="rounded-3xl object-contain max-h-[90%] max-w-[80%]"
     />
   </div>
   <div class="post-info w-full [&>*]:p-3 relative">
     <div
-      class="border-b border-white border-opacity-20 flex items-center gap-3"
+      class="border-b border-white border-opacity-20 flex justify-between items-center"
     >
-      <div class="dp w-10 h-10 rounded-full overflow-hidden">
-        <img src="/images/uploads/<%= post.user.dp %>" alt="DP" />
+      <div class="flex items-center gap-3">
+        <div class="dp w-10 h-10 rounded-full overflow-hidden">
+          <img
+            src="/images/uploads/<%= post.user.dp ? post.user.dp : `userWithoutDp.jpg` %>"
+            alt="DP"
+            class="size-full object-cover"
+          />
+        </div>
+        <a href="/profile/<%= post.user._id %>"><%= post.user.username %></a>
       </div>
-      <a href="/profile/<%= post.user._id %>"><%= post.user.username %></a>
+      <% if (post.user._id.equals(user._id)) { %>
+      <span
+        class="material-symbols-outlined h-fit more cursor-pointer"
+        onclick="openModal()"
+      >
+        more_horiz
+      </span>
+      <% } %>
     </div>
     <div>
       <h1 class="text-3xl"><%= post.title %></h1>
@@ -49,7 +94,7 @@
               bookmark
             </span>
           </a>
-          <% } else{ %>
+          <% } else { %>
           <a href="/bookmarked/<%= post._id %>" class="flex items-center">
             <span class="material-symbols-outlined text-3xl">
               bookmark_add
@@ -62,19 +107,20 @@
   </div>
 </div>
 <script>
-  //   const lineHeart = document.querySelector(".ri-heart-2-line");
-  //   const filledHeart = document.querySelector(".ri-heart-2-fill");
-  // //   lineHeart.addEventListener("click", () => {
-  // //     lineHeart.style.display = "none";
-  // //     filledHeart.style.display = "inline-block";
-  // //   });
-  // //   filledHeart.addEventListener("click", () => {
-  // //     filledHeart.style.display = "none";
-  // //     lineHeart.style.display = "inline-block";
-  // //   });
-  //  const handleClick = (post) => {
-  //     console.log(post);
-  //  }
+  const openModal = () => {
+    document.querySelector(".overlay").classList.toggle("hidden");
+    document.querySelector(".modal").classList.toggle("hidden");
+    document.querySelector(".modal").classList.toggle("show");
+  };
+  const closeModal = () => {
+    openModal();
+    document.querySelector(".delete-1").classList.remove("hidden");
+    document.querySelector(".delete-2").classList.add("hidden");
+  };
+  const clickdelete = () => {
+    document.querySelector(".delete-1").classList.add("hidden");
+    document.querySelector(".delete-2").classList.remove("hidden");
+  };
 </script>
 
 <% include ./partials/footer.ejs %>

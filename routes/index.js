@@ -10,18 +10,29 @@ const upload = require("./multer");
 const localStrategy = require("passport-local");
 passport.use(new localStrategy(userModel.authenticate()));
 
+let currentUser = null;
+router.use(async (req, res, next) => {
+  if (req.session.passport) {
+    currentUser = await userModel.findOne({
+      username: req.session.passport.user,
+    });
+  }
+  next();
+});
+
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.render("login", { nav: false });
+  // isLoggedIn ? res.redirect("/feed") :
+  res.render("login", { nav: false, user: currentUser });
 });
 
 router.get("/register-page", function (req, res, next) {
-  res.render("register", { nav: false });
+  res.render("register", { nav: false, user: currentUser });
 });
 
 router.get("/feed", isLoggedIn, async (req, res) => {
   const posts = await postModel.find();
-  res.render("feed", { posts: posts, nav: true });
+  res.render("feed", { posts: posts, nav: true, user: currentUser });
 });
 
 router.get("/profile", isLoggedIn, async function (req, res, next) {
@@ -87,7 +98,33 @@ router.get("/pin/:postId", isLoggedIn, async (req, res) => {
   const user = await userModel.findOne({
     username: req.session.passport.user,
   });
+
   res.render("pin", { nav: true, post: post, user: user });
+});
+
+router.get("/delete/:postId", async (req, res) => {
+  const postId = req.params.postId;
+  const user = await userModel.findOne({
+    username: req.session.passport.user,
+  });
+  const post = await postModel.findOne({
+    _id: postId,
+  });
+  if (user._id.equals(post.user)) {
+    // delete from post model
+    const deleted = await postModel.deleteOne({
+      _id: postId,
+    });
+    if (deleted) {
+      // delete it from user document
+      const index = user.posts.indexOf(postId);
+      index !== -1 && user.posts.splice(index, 1);
+      await user.save();
+      res.redirect(`/pins/${user._id}`);
+    }
+  } else {
+    res.render("delete", { nav: true, user: currentUser });
+  }
 });
 
 router.get("/unliked/:postId", isLoggedIn, async (req, res) => {
@@ -99,7 +136,7 @@ router.get("/unliked/:postId", isLoggedIn, async (req, res) => {
     username: req.session.passport.user,
   });
   const index = post.likes.findIndex((userId) => userId.equals(user._id));
-  post.likes.splice(index, 1);
+  index !== -1 && post.likes.splice(index, 1);
   await post.save();
   res.redirect(`/pin/${postId}`);
 });
@@ -181,12 +218,13 @@ router.post("/edit-info-submit", isLoggedIn, async function (req, res, next) {
       error: error,
       message: "Error updating user information",
       nav: true,
+      user: currentUser,
     });
   }
 });
 
 router.get("/add", isLoggedIn, (req, res) => {
-  res.render("add", { nav: true });
+  res.render("add", { nav: true, user: currentUser });
 });
 
 router.post(
@@ -209,7 +247,12 @@ router.post(
       await user.save();
       res.redirect("/profile");
     } catch (error) {
-      res.render("error", { error: error, message: "", nav: true });
+      res.render("error", {
+        error: error,
+        message: "",
+        nav: true,
+        user: currentUser,
+      });
     }
   }
 );
@@ -231,7 +274,7 @@ router.post(
     successRedirect: "/profile",
     failureRedirect: "/",
   }),
-  function (rea, res) {}
+  function (req, res) {}
 );
 
 router.get("/logout", function (req, res) {

@@ -75,19 +75,20 @@
           <img
             src="https://img.freepik.com/premium-vector/document-with-plus-button-line-icon-word-processor-text-editor-digital-add-create-new-file-documentation-file-management-concept-glassmorphism-vector-line-icon-business-advertising_661108-2177.jpg?w=740"
             alt="folder image"
-            class="object-cover"
+            class="object-cover size-full"
           />
           <% } else { %>
           <img
             src="/images/uploads/<%= user.posts[0].image %>"
             alt="folder image"
-            class="object-cover"
+            class="object-cover size-full"
           />
           <% } %>
         </div>
         <div class="folder-name font-bold my-1">All Pins</div>
         <div class="pins text-xs text-zinc-400">
-          <%= user.posts.length %> Pins
+          <%= user.posts.length %> <%= user.posts.length === 1 ? `Pin` : `Pins`
+          %>
         </div>
       </div>
     </a>
@@ -100,7 +101,7 @@
           <img
             src="/images/uploads/<%= user.bookmarks[0].image %>"
             alt="folder image"
-            class="object-cover"
+            class="object-cover size-full"
           />
         </div>
         <div class="folder-name font-bold my-1">Saved Pins</div>
