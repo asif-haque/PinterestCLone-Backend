@@ -8,13 +8,15 @@ const passport = require("passport");
 const env = require("dotenv");
 env.config();
 
-const MongoStore = require("connect-mongo")
+const MongoStore = require("connect-mongo");
 
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+var usersRouter = require("./models/users");
 const { error } = require("console");
+const connectMongoDb = require("./connection");
 
 var app = express();
+connectMongoDb();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

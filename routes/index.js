@@ -1,19 +1,19 @@
 var express = require("express");
 var router = express.Router();
-const userModel = require("./users");
-const postModel = require("./posts");
+const UserModel = require("../models/users");
+const PostModel = require("../models/posts");
 const passport = require("passport");
 const upload = require("./multer");
 
 // username => req.session.passport.user
 
 const localStrategy = require("passport-local");
-passport.use(new localStrategy(userModel.authenticate()));
+passport.use(new localStrategy(UserModel.authenticate()));
 
 let currentUser = null;
 router.use(async (req, res, next) => {
   if (req.session.passport) {
-    currentUser = await userModel.findOne({
+    currentUser = await UserModel.findOne({
       username: req.session.passport.user,
     });
   }
@@ -30,15 +30,14 @@ router.get("/register-page", function (req, res, next) {
   res.render("register", { nav: false, user: currentUser });
 });
 
-router.get("/feed", isLoggedIn, async (req, res) => {
-  const posts = await postModel.find();
+router.get("/feed", async (req, res) => {
+  const posts = await PostModel.find();
   res.render("feed", { posts: posts, nav: true, user: currentUser });
 });
 
 router.get("/profile", isLoggedIn, async function (req, res, next) {
   const username = req.session.passport.user;
-  const user = await userModel
-    .findOne({ username: username })
+  const user = await UserModel.findOne({ username: username })
     .populate("posts")
     .populate("bookmarks");
   res.render("profile", { user: user, nav: true, self: true });
@@ -46,7 +45,7 @@ router.get("/profile", isLoggedIn, async function (req, res, next) {
 
 router.get("/delete-dp", isLoggedIn, async function (req, res, next) {
   const username = req.session.passport.user;
-  const user = await userModel.findOne({ username: username });
+  const user = await UserModel.findOne({ username: username });
   user.dp = null;
   await user.save();
   res.redirect("/profile");
@@ -54,14 +53,14 @@ router.get("/delete-dp", isLoggedIn, async function (req, res, next) {
 
 router.get("/profile/:userId", isLoggedIn, async function (req, res, next) {
   const userId = req.params.userId;
-  const searchedUser = await userModel
-    .findOne({ _id: userId })
-    .populate("posts");
+  const searchedUser = await UserModel.findOne({ _id: userId }).populate(
+    "posts"
+  );
 
   const username = req.session.passport.user;
-  const user = await userModel
-    .findOne({ username: username })
-    .populate("posts");
+  const user = await UserModel.findOne({ username: username }).populate(
+    "posts"
+  );
   if (userId === user._id.toString()) {
     res.redirect("/profile");
   } else {
@@ -71,31 +70,27 @@ router.get("/profile/:userId", isLoggedIn, async function (req, res, next) {
 
 router.get("/pins/:userId", isLoggedIn, async (req, res) => {
   const userId = req.params.userId;
-  const user = await userModel
-    .findOne({
-      _id: userId,
-    })
-    .populate("posts");
+  const user = await UserModel.findOne({
+    _id: userId,
+  }).populate("posts");
   res.render("pins", { nav: true, user: user });
 });
 
 router.get("/bookmarks", isLoggedIn, async (req, res) => {
-  const user = await userModel
-    .findOne({
-      username: req.session.passport.user,
-    })
-    .populate("bookmarks");
+  const user = await UserModel.findOne({
+    username: req.session.passport.user,
+  }).populate("bookmarks");
   res.render("bookmarks", { nav: true, user: user });
 });
 
 router.get("/pin/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
-  const post = await postModel
+  const post = await PostModel
     .findOne({
       _id: postId,
     })
     .populate("user");
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
 
@@ -104,15 +99,15 @@ router.get("/pin/:postId", isLoggedIn, async (req, res) => {
 
 router.get("/delete/:postId", async (req, res) => {
   const postId = req.params.postId;
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
-  const post = await postModel.findOne({
+  const post = await PostModel.findOne({
     _id: postId,
   });
   if (user._id.equals(post.user)) {
     // delete from post model
-    const deleted = await postModel.deleteOne({
+    const deleted = await PostModel.deleteOne({
       _id: postId,
     });
     if (deleted) {
@@ -129,26 +124,62 @@ router.get("/delete/:postId", async (req, res) => {
 
 router.get("/edit/:postId", async (req, res) => {
   const postId = req.params.postId;
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
-  const post = await postModel.findOne({
+  const post = await PostModel.findOne({
     _id: postId,
   });
   if (user._id.equals(post.user)) {
-    // redirect to add route
-    res.redirect("/add")
+    res.render("add", { nav: true, user: currentUser, post: post });
   } else {
     res.render("delete", { nav: true, user: currentUser });
   }
 });
 
+// ????????????????????????????????????????????????????????????????????????????????????????????? 👇
+
+router.post(
+  "/editpost",
+  isLoggedIn,
+  upload.single("uploadedFile"),
+  async (req, res) => {
+    try {
+      const user = await UserModel.findOne({
+        username: req.session.passport.user,
+      });
+
+      const post = await PostModel.create({
+        user: user._id,
+        title: req.body.title,
+        description: req.body.description,
+        image: req.file.filename,
+      });
+      user.posts.push(post._id);
+      await user.save();
+      res.redirect("/profile");
+    } catch (error) {
+      res.render("error", {
+        error: error,
+        message: "",
+        nav: true,
+        user: currentUser,
+      });
+    }
+  }
+);
+// router.get("/add/:postId", isLoggedIn, async (req, res) => {
+//   const postId = req.params.postId;
+//   const post = await postModel.findOne({ _id: postId });
+//   res.render("add", { nav: true, user: currentUser, post: post });
+// });
+
 router.get("/unliked/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
-  const post = await postModel.findOne({
+  const post = await PostModel.findOne({
     _id: postId,
   });
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
   const index = post.likes.findIndex((userId) => userId.equals(user._id));
@@ -159,10 +190,10 @@ router.get("/unliked/:postId", isLoggedIn, async (req, res) => {
 
 router.get("/liked/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
-  const post = await postModel.findOne({
+  const post = await PostModel.findOne({
     _id: postId,
   });
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
   post.likes.push(user._id);
@@ -172,7 +203,7 @@ router.get("/liked/:postId", isLoggedIn, async (req, res) => {
 
 router.get("/bookmarked/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
   user.bookmarks.push(postId);
@@ -182,7 +213,7 @@ router.get("/bookmarked/:postId", isLoggedIn, async (req, res) => {
 
 router.get("/unbookmarked/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
-  const user = await userModel.findOne({
+  const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
   const index = user.bookmarks.findIndex((id) => id === postId);
@@ -198,7 +229,7 @@ router.post(
   async function (req, res, next) {
     // find the user and change the dp of the user in the database and save
     const username = req.session.passport.user;
-    const user = await userModel.findOne({ username: username });
+    const user = await UserModel.findOne({ username: username });
 
     user.dp = req.file.filename;
     await user.save();
@@ -209,7 +240,7 @@ router.post(
 router.get("/edit-info", isLoggedIn, async function (req, res, next) {
   // find the user and render the previous data
   const username = req.session.passport.user;
-  const user = await userModel.findOne({ username: username });
+  const user = await UserModel.findOne({ username: username });
 
   res.render("editInfo", { user: user, nav: true });
 });
@@ -217,11 +248,11 @@ router.get("/edit-info", isLoggedIn, async function (req, res, next) {
 router.post("/edit-info-submit", isLoggedIn, async function (req, res, next) {
   // find the user and render the previous data
   const oldusername = req.session.passport.user;
-  const user = await userModel.findOne({ username: oldusername });
+  const user = await UserModel.findOne({ username: oldusername });
   const { fullname, email, username } = req.body;
   console.log(":: ", fullname);
   try {
-    await userModel.updateOne(
+    await UserModel.updateOne(
       { username: oldusername },
       {
         $set: { fullname: fullname, email: email, username: username },
@@ -239,8 +270,8 @@ router.post("/edit-info-submit", isLoggedIn, async function (req, res, next) {
   }
 });
 
-router.get("/add", isLoggedIn, (req, res) => {
-  res.render("add", { nav: true, user: currentUser });
+router.get("/add", isLoggedIn, async (req, res) => {
+  res.render("add", { nav: true, user: currentUser, post: null });
 });
 
 router.post(
@@ -249,11 +280,11 @@ router.post(
   upload.single("uploadedFile"),
   async (req, res) => {
     try {
-      const user = await userModel.findOne({
+      const user = await UserModel.findOne({
         username: req.session.passport.user,
       });
 
-      const post = await postModel.create({
+      const post = await PostModel.create({
         user: user._id,
         title: req.body.title,
         description: req.body.description,
@@ -275,9 +306,9 @@ router.post(
 
 router.post("/register", function (req, res, next) {
   const { username, email, fullname, password } = req.body;
-  const userData = new userModel({ username, email, fullname });
+  const userData = new UserModel({ username, email, fullname });
 
-  userModel.register(userData, password).then(function () {
+  UserModel.register(userData, password).then(function () {
     passport.authenticate("local")(req, res, function () {
       res.redirect("/profile");
     });

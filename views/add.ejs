@@ -4,7 +4,7 @@
     class="px-4 py-5 border-b border-white border-opacity-30 flex justify-between items-center"
   >
     <h1 class="text-3xl">Create Pin</h1>
-    <button class="post-btn h-10 px-7 bg-red-700 rounded">Post</button>
+    <button class="post-btn h-10 px-7 bg-red-700 rounded"><%=post ? `Done` : `Post`%></button>
   </div>
   <form
     action="/createpost"
@@ -14,13 +14,20 @@
   >
     <div class="p-5 flex gap-5">
       <div
-        class="upload w-full border border-dashed border-white flex justify-center items-center"
+        class="upload w-[150%] border border-dashed border-white flex justify-center items-center gap-2 <%= post && `flex-col` %> py-3"
       >
+        <img
+          alt="post-image"
+          src="/images/uploads/<%= post.image %>"
+          class="post-img w-[70%]"
+        />
         <input
           type="file"
           name="uploadedFile"
-          class="hover:cursor-pointer"
+          class="uploadedFile hover:cursor-pointer"
           accept=".jpg, .jpeg, .png"
+          required
+          onchange="previewFile()"
         />
       </div>
       <div class="w-full space-y-5">
@@ -32,6 +39,7 @@
             name="title"
             placeholder="Add a Title"
             class="bg-zinc-500 border-zinc-400 w-full p-2 px-5 rounded-2xl"
+            value="<%= post && post.title %>"
           />
         </div>
         <div class="flex flex-col gap-2">
@@ -42,6 +50,7 @@
             name="description"
             placeholder="Add a Description"
             class="h-32 bg-zinc-500 border-zinc-400 w-full p-2 px-5 rounded-2xl"
+            value="<%= post && post.description %>"
           ></textarea>
         </div>
       </div>
@@ -53,9 +62,19 @@
   //     document.querySelector(".real-form").click();
   //   });
   document.querySelector(".post-btn").addEventListener("click", () => {
-    document.querySelectorAll("form").forEach((form) => {
-      form.submit();
-    });
+    document.querySelector("form").submit();
   });
+  const previewFile = () => {
+    const postImg = document.querySelector(".uploadedFile").files[0];
+    if (postImg) {
+      const blob = new Blob([postImg]);
+      const url = URL.createObjectURL(blob);
+      document.querySelector(".post-img").src = url;
+    } else {
+      document.querySelector(".post-img").src =
+        "/images/uploads/<%= post.image %>";
+    }
+  };
+  
 </script>
 <% include ./partials/footer.ejs %>
