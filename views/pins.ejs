@@ -3,10 +3,10 @@
 <% if (user.posts.length === 0) { %>
 <h1 class="text-3xl m-auto font-bold my-10 w-fit text-white">Nothing !</h1>
 <%} else { %>
-<div class="p-3 grid grid-cols-3 lg:grid-cols-4 gap-1 md:gap-2">
+<div class="p-5 lg:px-[25vh] grid grid-cols-3 lg:grid-cols-3 gap-1 md:gap-2">
   <% for (var i = user.posts.length - 1; i >= 0; i-- ) { %>
   <div
-    class="max-h-[40vh] rounded overflow-hidden hover:scale-[98%] transition-all"
+    class="lg:h-[50vh] sm:h-[25vh] overflow-hidden hover:scale-[98%] transition-all"
   >
     <a href="/pin/<%= user.posts[i]._id %>" class="">
       <img

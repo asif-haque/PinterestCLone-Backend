@@ -7,11 +7,11 @@
   Upload something worthy!
 </h1>
 <%} else { %>
-<div class="text-white p-3 columns-2 gap-1 md:columns-3 md:gap-3 lg:columns-5">
+<div class="text-white p-3 px-10 columns-2 gap-1 md:columns-3 md:gap-4 lg:columns-4">
   <% for (var i = 0; i < posts.length; i++ ) { %>
   <a href="/pin/<%= posts[i]._id %>" class="">
     <div
-      class="mb-1 md:mb-3 rounded-lg overflow-hidden hover:scale-[98%] transition-all"
+      class="mb-1 md:mb-4 rounded-lg overflow-hidden hover:scale-[98%] transition-all"
     >
       <img
         src="/images/uploads/<%= posts[i].image %>"
