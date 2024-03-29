@@ -1,12 +1,13 @@
-<% include ./partials/header.ejs %>
+<% include ./partials/header.ejs %> 
 
-<div
-  class="text-white p-3 grid grid-cols-3 lg:grid-cols-4 gap-1 md:gap-2"
->
-  <% if (user.posts.length === 0) { %>
-  <h1 class="text-3xl m-auto font-bold my-10">Nothing !</h1>
-  <%} else { for (var i = user.posts.length - 1; i >= 0; i-- ) { %>
-  <div class="max-h-[40vh] rounded overflow-hidden hover:scale-[98%] transition-all">
+<% if (user.posts.length === 0) { %>
+<h1 class="text-3xl m-auto font-bold my-10 w-fit text-white">Nothing !</h1>
+<%} else { %>
+<div class="p-3 grid grid-cols-3 lg:grid-cols-4 gap-1 md:gap-2">
+  <% for (var i = user.posts.length - 1; i >= 0; i-- ) { %>
+  <div
+    class="max-h-[40vh] rounded overflow-hidden hover:scale-[98%] transition-all"
+  >
     <a href="/pin/<%= user.posts[i]._id %>" class="">
       <img
         src="/images/uploads/<%= user.posts[i].image %>"
@@ -17,4 +18,5 @@
   </div>
   <% } } %>
 </div>
+
 <% include ./partials/footer.ejs %>
