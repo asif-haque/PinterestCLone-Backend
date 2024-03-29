@@ -22,7 +22,7 @@ router.use(async (req, res, next) => {
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  // isLoggedIn ? res.redirect("/feed") :
+  // implement insta in incognito feature
   res.render("login", { nav: false, user: currentUser });
 });
 
@@ -30,7 +30,7 @@ router.get("/register-page", function (req, res, next) {
   res.render("register", { nav: false, user: currentUser });
 });
 
-router.get("/feed", async (req, res) => {
+router.get("/feed", isLoggedIn, async (req, res) => {
   const posts = await PostModel.find();
   res.render("feed", { posts: posts, nav: true, user: currentUser });
 });
@@ -85,11 +85,9 @@ router.get("/bookmarks", isLoggedIn, async (req, res) => {
 
 router.get("/pin/:postId", isLoggedIn, async (req, res) => {
   const postId = req.params.postId;
-  const post = await PostModel
-    .findOne({
-      _id: postId,
-    })
-    .populate("user");
+  const post = await PostModel.findOne({
+    _id: postId,
+  }).populate("user");
   const user = await UserModel.findOne({
     username: req.session.passport.user,
   });
@@ -140,24 +138,29 @@ router.get("/edit/:postId", async (req, res) => {
 // ????????????????????????????????????????????????????????????????????????????????????????????? 👇
 
 router.post(
-  "/editpost",
+  "/editpost/:id",
   isLoggedIn,
   upload.single("uploadedFile"),
   async (req, res) => {
+    const postId = req.params.id;
+    console.log(postId);
     try {
       const user = await UserModel.findOne({
         username: req.session.passport.user,
       });
 
-      const post = await PostModel.create({
-        user: user._id,
-        title: req.body.title,
-        description: req.body.description,
-        image: req.file.filename,
-      });
-      user.posts.push(post._id);
-      await user.save();
-      res.redirect("/profile");
+      const post = await PostModel.findByIdAndUpdate(
+        { _id: postId },
+        {
+          // user: user._id,
+          title: req.body.title,
+          description: req.body.description,
+          image: req.file.filename,
+        }
+      );
+      // user.posts.push(post._id);
+      // await user.save();
+      res.redirect(`/pin/${postId}`);
     } catch (error) {
       res.render("error", {
         error: error,
@@ -292,7 +295,7 @@ router.post(
       });
       user.posts.push(post._id);
       await user.save();
-      res.redirect("/profile");
+      res.redirect(`/pin/${post._id}`);
     } catch (error) {
       res.render("error", {
         error: error,

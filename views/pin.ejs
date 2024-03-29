@@ -24,6 +24,9 @@
 <div
   class="hidden modal absolute z-20 left-1/2 top-1/2 [transform:translate(-50%,-50%)] bg-zinc-800 text-white text-center w-1/4 divide-y-[1px] rounded-xl"
 >
+  <div class="py-3">
+    <a href="/edit/<%= post._id %>">Edit</a>
+  </div>
   <div class="delete-drama">
     <div class="delete-1 py-3 text-red-500">
       <button onclick="clickdelete()">Delete ?</button>
@@ -32,9 +35,6 @@
     <div class="delete-2 hidden py-3 text-red-500 font-bold">
       <a href="/delete/<%= post._id %>">Delete ???</a>
     </div>
-  </div>
-  <div class="py-3">
-    <a href="/edit/<%= post._id %>">Edit</a>
   </div>
 </div>
 

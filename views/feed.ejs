@@ -6,7 +6,9 @@
   <h1>No pins</h1>
   <%} else { for (var i = 0; i < posts.length; i++ ) { %>
   <a href="/pin/<%= posts[i]._id %>" class="">
-    <div class="mb-1 md:mb-3 lg:mb-4 rounded-lg overflow-hidden">
+    <div
+      class="mb-1 md:mb-3 rounded-lg overflow-hidden hover:scale-[98%] transition-all"
+    >
       <img
         src="/images/uploads/<%= posts[i].image %>"
         class="size-full object-cover"

@@ -11,9 +11,11 @@ env.config();
 const MongoStore = require("connect-mongo");
 
 var indexRouter = require("./routes/index");
-var usersRouter = require("./models/users");
+const staticRouter = require("./routes/staticRoute");
+var usersRouter = require("./routes/users");
 const { error } = require("console");
 const connectMongoDb = require("./connection");
+const UserModel = require("./models/users");
 
 var app = express();
 connectMongoDb();
@@ -38,8 +40,8 @@ app.use(
 // Auth
 app.use(passport.initialize());
 app.use(passport.session()); // Creates session
-passport.serializeUser(usersRouter.serializeUser());
-passport.deserializeUser(usersRouter.deserializeUser());
+passport.serializeUser(UserModel.serializeUser());
+passport.deserializeUser(UserModel.deserializeUser());
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -47,7 +49,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Routing
 app.use("/", indexRouter);
+// app.use("/", staticRouter);
 app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler

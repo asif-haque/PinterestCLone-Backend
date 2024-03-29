@@ -3,28 +3,38 @@
   <div
     class="px-4 py-5 border-b border-white border-opacity-30 flex justify-between items-center"
   >
-    <h1 class="text-3xl">Create Pin</h1>
-    <button class="post-btn h-10 px-7 bg-red-700 rounded"><%=post ? `Done` : `Post`%></button>
+    <h1 class="text-3xl"><%=post ? `Edit` : `Create`%> Pin</h1>
+    <button class="post-btn h-10 px-7 bg-red-700 rounded">
+      <%=post ? `Done` : `Post`%>
+    </button>
   </div>
   <form
-    action="/createpost"
+    action="<%= post ? `/editpost/${post._id}` : `/createpost` %>"
     class="upload-form"
     method="post"
     enctype="multipart/form-data"
   >
     <div class="p-5 flex gap-5">
       <div
-        class="upload w-[150%] border border-dashed border-white flex justify-center items-center gap-2 <%= post && `flex-col` %> py-3"
+        class="upload w-[150%] border border-dashed border-white flex flex-col justify-center items-center gap-5 %> py-3"
       >
         <img
-          alt="post-image"
-          src="/images/uploads/<%= post.image %>"
-          class="post-img w-[70%]"
+          alt="No image selected"
+          src="/images/uploads/<%= post?.image %>"
+          class="post-img max-h-[60vh] max-w-[90%] text-zinc-500"
         />
+        <label
+          for="uploadedFile"
+          class="labelForUploadedFile hover:cursor-pointer flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-3xl"> attachment </span>
+          <span class="text">Add Image</span>
+        </label>
         <input
           type="file"
           name="uploadedFile"
-          class="uploadedFile hover:cursor-pointer"
+          id="uploadedFile"
+          class="uploadedFile hidden"
           accept=".jpg, .jpeg, .png"
           required
           onchange="previewFile()"
@@ -38,7 +48,7 @@
             id="title"
             name="title"
             placeholder="Add a Title"
-            class="bg-zinc-500 border-zinc-400 w-full p-2 px-5 rounded-2xl"
+            class="bg-zinc-600 border-zinc-400 w-full p-2 px-5 rounded-2xl"
             value="<%= post && post.title %>"
           />
         </div>
@@ -49,7 +59,7 @@
             id="description"
             name="description"
             placeholder="Add a Description"
-            class="h-32 bg-zinc-500 border-zinc-400 w-full p-2 px-5 rounded-2xl"
+            class="h-32 bg-zinc-600 border-zinc-400 w-full p-2 px-5 rounded-2xl"
             value="<%= post && post.description %>"
           ></textarea>
         </div>
@@ -58,9 +68,6 @@
   </form>
 </div>
 <script>
-  //   document.querySelector(".fake-form").addEventListener("click", () => {
-  //     document.querySelector(".real-form").click();
-  //   });
   document.querySelector(".post-btn").addEventListener("click", () => {
     document.querySelector("form").submit();
   });
@@ -70,11 +77,12 @@
       const blob = new Blob([postImg]);
       const url = URL.createObjectURL(blob);
       document.querySelector(".post-img").src = url;
+      document.querySelector(".labelForUploadedFile .text").textContent =
+        "Change Image";
     } else {
       document.querySelector(".post-img").src =
-        "/images/uploads/<%= post.image %>";
+        "/images/uploads/<%= post?.image %>";
     }
   };
-  
 </script>
 <% include ./partials/footer.ejs %>
