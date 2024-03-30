@@ -24,7 +24,7 @@ router.use(async (req, res, next) => {
 router.get("/", function (req, res, next) {
   // implement insta in incognito feature
   if (req.isAuthenticated()) {
-    res.redirect("/profile");
+    res.redirect("/feed");
   } else {
     res.render("login", { nav: false, user: currentUser });
   }
@@ -315,7 +315,7 @@ router.post("/register", function (req, res, next) {
 
   UserModel.register(userData, password).then(function () {
     passport.authenticate("local")(req, res, function () {
-      res.redirect("/profile");
+      res.redirect("/feed");
     });
   });
 });
@@ -323,7 +323,7 @@ router.post("/register", function (req, res, next) {
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/profile",
+    successRedirect: "/feed",
     failureRedirect: "/",
   }),
   function (req, res) {}
